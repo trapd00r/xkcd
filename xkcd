@@ -1,0 +1,188 @@
+#!/usr/bin/perl
+my $APP = 'xkcd';
+use vars qw($VERSION);
+$VERSION = '0.02';
+
+use strict;
+use WWW::Mechanize;
+use Getopt::Long;
+use Pod::Usage;
+
+my $m = WWW::Mechanize->new(
+  onwarn  => undef,
+  onerror => sub { print "You are doing it Wrong. Stop. Bye.\n" and exit 1; },
+);
+$m->agent_alias('Linux Mozilla');
+
+my $xkcd_base   = 'http://xkcd.com';
+my $xkcd_img    = 'http://imgs.xkcd.com/comics';
+my $xkcd_url    = undef;
+
+our($opt_comic_no, $opt_alt) = (-1, 0);
+
+GetOptions(
+  'comic:i' => \$opt_comic_no,
+  'alt'     => \$opt_alt,
+  'latest'  => sub { $opt_comic_no = -1; },
+
+  'help'    => sub { pod2usage(verbose => 1); },
+  'man'     => sub { pod2usage(verbose => 3); },
+  'version' => sub { printf("%s v%s\n", $APP, $VERSION) and exit; },
+);
+
+$opt_comic_no = $ARGV[0] if $ARGV[0] =~ /^\d+$/;
+
+$xkcd_url  = "$xkcd_base/$opt_comic_no/";
+
+if($opt_comic_no == -1) {
+  latest($xkcd_base);
+}
+
+if($opt_alt) {
+  my(undef, $txt) = fetch($xkcd_url);
+  $txt = _format($txt);
+  print "$txt\n";
+  exit;
+}
+
+display_img( fetch($xkcd_url) );
+
+
+sub latest {
+  my $url  = shift;
+  $m->get($url) or die($!);
+
+  for($m->find_all_images) {
+    if($_->url =~ /\Q$xkcd_img\E/) {
+      $opt_comic_no = 'Random str that is not a number. Hurray!';
+      display_img( fetch($xkcd_base) );
+      exit;
+    }
+  }
+  return;
+}
+
+sub _format {
+  my $str = shift;
+  $str = join(".\n", split(/(?:\.|!|\?) /, $str));
+  $str =~ s/^/ / unless $str =~ /^\s+/;
+  return $str;
+}
+
+
+sub fetch {
+  my $url = shift;
+  $m->get($url);
+
+  my($img_url, $alt) = (undef) x 2;
+
+  for($m->content) {
+    if(m;<img src="($xkcd_img/.+\.png)" title="(.+)" alt;) {
+      $img_url = $1;
+      $alt     = $2;
+      $alt =~ s/&#39;/'/g;
+      last;
+    }
+  }
+  return($img_url, $alt);
+}
+
+
+sub display_img {
+  my($url, $text) = @_;
+
+  $text = _format($text);
+
+  $m->get($url);
+
+  if( x() ) {
+    system(get_viewer(), $url)  == 0
+      and printf("\e[1m%s\e[0m:\n%s\n",
+      ($opt_comic_no !~ /^\d+$/)
+        ? 'Latest XKCD'
+        : "xkcd # $opt_comic_no"
+        , $text
+      ) and return;
+    return;
+  }
+
+  print "$url\n";
+  print "Press any key to continue...\n";
+
+  while(<STDIN>) {
+    last;
+  }
+
+  printf("%s\n%s\n",
+    ($opt_comic_no =~ /^\d+$/)
+      ? 'Latest xkcd'
+      : "xkcd $opt_comic_no"
+    );
+}
+
+sub x {
+  exists($ENV{DISPLAY}) and return 1;
+  return 0;
+}
+
+sub get_viewer {
+  my $feh = system("which feh &> /dev/null");
+  if( ($feh << 8) == 0 ) {
+    return('feh', qw(-Z -Q -x -B black));
+  }
+  my $display = system("which display &> /dev/null");
+  if( ($display << 8) == 0 ) {
+    return('display');
+  }
+
+  print STDERR "No viewer available.\n" and exit 1;
+}
+
+=pod
+
+=head1 NAME
+
+xkcd - xkcd in your console
+
+=head1 USAGE
+
+xkcd [OPTIONS]
+
+=head1 DESCRIPTION
+
+xkcd rocks.
+
+=head1 OPTIONS
+
+  -c,   --comic   comic number
+  -l,   --latest  show the latest xkcd comic
+  -a,   --alt     show the 'mouse over' text
+
+  -h,   --help    show the help and exit
+  -v,   --version show version info and exit
+  -m,   --man     show the documentation and exit
+
+=head1 PREREQUISITES
+
+To view the xkcd comic in X, B<feh> or B<display> (from the ImageMagick suite)
+needs to be installed.
+
+=head1 AUTHOR
+
+  Magnus Woldrich
+  CPAN ID: WOLDRICH
+  magnus@trapd00r.se
+  http://japh.se
+
+=head1 REPORTING BUGS
+
+Report bugs on the issue tracker ( <https://github.com/trapd00r/xkcd/issues> )
+or by mail to <magnus@trapd00r.se>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2010 Magnus Woldrich. All right reserved.
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
+
+=cut
