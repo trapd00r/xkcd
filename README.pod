@@ -14,13 +14,14 @@ xkcd rocks.
 
 =head1 OPTIONS
 
-      -c,   --comic   comic number
-      -l,   --latest  show the latest xkcd comic
-      -a,   --alt     show the 'mouse over' text
+  -c,   --comic     comic number
+  -l,   --latest    show the latest xkcd comic
+  -a,   --alt       show the 'mouse over' text
+  -d,   --download  download the comic to DESTINATION
 
-      -h,   --help    show the help and exit
-      -v,   --version show version info and exit
-      -m,   --man     show the documentation and exit
+  -h,   --help      show the help and exit
+  -v,   --version   show version info and exit
+  -m,   --man       show the documentation and exit
 
 =head1 PREREQUISITES
 
