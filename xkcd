@@ -34,11 +34,14 @@ $opt_comic_no = $ARGV[0] if $ARGV[0] =~ /^\d+$/;
 
 $xkcd_url  = "$xkcd_base/$opt_comic_no/";
 
-if($opt_comic_no == -1) {
+if( ($opt_comic_no == -1) and not($opt_alt)) {
   latest($xkcd_base);
 }
 
 if($opt_alt) {
+  if($opt_comic_no == -1) {
+    $xkcd_url = $xkcd_base;
+  }
   my(undef, $txt) = fetch($xkcd_url);
   $txt = _format($txt);
   print "$txt\n";
@@ -102,7 +105,7 @@ sub display_img {
         ? 'Latest XKCD'
         : "xkcd # $opt_comic_no"
         , $text
-      ) and return;
+      );
     return;
   }
 
