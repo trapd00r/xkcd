@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.02';
+$VERSION = '0.03';
 
 use strict;
 use WWW::Mechanize;
@@ -21,13 +21,14 @@ my $xkcd_url    = undef;
 our($opt_comic_no, $opt_alt) = (-1, 0);
 
 GetOptions(
-  'comic:i' => \$opt_comic_no,
-  'alt'     => \$opt_alt,
-  'latest'  => sub { $opt_comic_no = -1; },
+  'c|comic:i'   => \$opt_comic_no,
+  'a|alt|text'  => \$opt_alt,
+  'l|latest'    => sub { $opt_comic_no = -1; },
+  'download:s'  => sub { shift; download_comic($opt_comic_no, shift); },
 
-  'help'    => sub { pod2usage(verbose => 1); },
-  'man'     => sub { pod2usage(verbose => 3); },
-  'version' => sub { printf("%s v%s\n", $APP, $VERSION) and exit; },
+  'h|help'      => sub { pod2usage(verbose => 1); },
+  'm|man'       => sub { pod2usage(verbose => 3); },
+  'v|version'   => sub { printf("%s v%s\n", $APP, $VERSION) and exit; },
 );
 
 $opt_comic_no = $ARGV[0] if $ARGV[0] =~ /^\d+$/;
@@ -72,6 +73,37 @@ sub _format {
   return $str;
 }
 
+sub download_comic {
+  my($comic, $dest) = @_;
+  defined $dest or $dest = './';
+
+  $dest .= '/' if $dest !~ m;.*/$;;
+
+  my $url;
+  if($comic == -1) {
+    $url = $xkcd_base;
+  }
+  elsif($comic !~ /^\d+$/) {
+    print STDERR "'$comic' is not an integer!\n" and exit 1;
+  }
+  else {
+    $url = "$xkcd_base/$comic/";
+  }
+
+  my ($img, undef) = fetch($url);
+  $m->get($img);
+
+  my($filename) = $img =~ m;.+/(.+\.(?:png|jpg))$;i;
+  $dest .= $filename;
+
+  printf("%s => %s\n",
+    $img,
+    $dest,
+  ) if
+  $m->save_content($dest) == 0;
+  exit;
+}
+
 
 sub fetch {
   my $url = shift;
@@ -80,7 +112,7 @@ sub fetch {
   my($img_url, $alt) = (undef) x 2;
 
   for($m->content) {
-    if(m;<img src="($xkcd_img/.+\.png)" title="(.+)" alt;) {
+    if(m;<img src="($xkcd_img/.+\.(?:png|jpg))" title="(.+)" alt;) {
       $img_url = $1;
       $alt     = $2;
       $alt =~ s/&#39;/'/g;
@@ -157,13 +189,14 @@ xkcd rocks.
 
 =head1 OPTIONS
 
-  -c,   --comic   comic number
-  -l,   --latest  show the latest xkcd comic
-  -a,   --alt     show the 'mouse over' text
+  -c,   --comic     comic number
+  -l,   --latest    show the latest xkcd comic
+  -a,   --alt       show the 'mouse over' text
+  -d,   --download  download the comic to DESTINATION
 
-  -h,   --help    show the help and exit
-  -v,   --version show version info and exit
-  -m,   --man     show the documentation and exit
+  -h,   --help      show the help and exit
+  -v,   --version   show version info and exit
+  -m,   --man       show the documentation and exit
 
 =head1 PREREQUISITES
 
