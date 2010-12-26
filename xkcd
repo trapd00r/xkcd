@@ -163,7 +163,7 @@ sub x {
 sub get_viewer {
   my $feh = system("which feh &> /dev/null");
   if( ($feh << 8) == 0 ) {
-    return('feh', qw(-Z -Q -x -B black));
+    return('feh', qw(-F -Z -Q -x -B black));
   }
   my $display = system("which display &> /dev/null");
   if( ($display << 8) == 0 ) {
