@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.03';
+$VERSION = '0.05';
 
 use strict;
 use WWW::Mechanize;
@@ -19,12 +19,13 @@ my $xkcd_img    = 'http://imgs.xkcd.com/comics';
 my $xkcd_url    = undef;
 
 our($opt_comic_no, $opt_alt) = (-1, 0);
+our($opt_download);
 
 GetOptions(
   'c|comic:i'   => \$opt_comic_no,
   'a|alt|text'  => \$opt_alt,
   'l|latest'    => sub { $opt_comic_no = -1; },
-  'download:s'  => sub { shift; download_comic($opt_comic_no, shift); },
+  'download=s'  => \$opt_download,
 
   'h|help'      => sub { pod2usage(verbose => 1); },
   'm|man'       => sub { pod2usage(verbose => 3); },
@@ -34,6 +35,11 @@ GetOptions(
 $opt_comic_no = $ARGV[0] if $ARGV[0] =~ /^\d+$/;
 
 $xkcd_url  = "$xkcd_base/$opt_comic_no/";
+
+if($opt_download) {
+  download_comic($opt_comic_no, $opt_download);
+  exit;
+}
 
 if( ($opt_comic_no == -1) and not($opt_alt)) {
   latest($xkcd_base);
@@ -94,6 +100,7 @@ sub download_comic {
   $m->get($img);
 
   my($filename) = $img =~ m;.+/(.+\.(?:png|jpg))$;i;
+  $filename = "$comic-$filename" unless $comic eq -1;
   $dest .= $filename;
 
   printf("%s => %s\n",
