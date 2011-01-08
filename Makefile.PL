@@ -3,7 +3,7 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'xkcd',
+    NAME                => 'App::xkcd',
     AUTHOR              => q{Magnus Woldrich <trapd00r@trapd00r.se>},
     VERSION_FROM        => './xkcd',
     ($ExtUtils::MakeMaker::VERSION >= 6.3002
