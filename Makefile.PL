@@ -14,6 +14,7 @@ WriteMakefile1(
 
     NAME                => 'App::xkcd',
     AUTHOR              => q{Magnus Woldrich <trapd00r@trapd00r.se>},
+    ABSTRACT           => 'Command-line interface to xkcd',
     VERSION_FROM        => './xkcd',
     'LICENSE'           => 'perl',
     PL_FILES            => {},
