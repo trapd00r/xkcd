@@ -15,7 +15,7 @@ WriteMakefile1(
     NAME                => 'App::xkcd',
     AUTHOR              => q{Magnus Woldrich <trapd00r@trapd00r.se>},
     VERSION_FROM        => './xkcd',
-    'LICENSE'           => 'perl'
+    'LICENSE'           => 'perl',
     PL_FILES            => {},
     EXE_FILES =>           ['xkcd'],
     PREREQ_PM => {
@@ -28,19 +28,23 @@ WriteMakefile1(
     clean               => { FILES => 'xkcd-*' },
 );
 
-sub WriteMakefile1 {  #Written by Alexandr Ciornii, version 0.23. Added by eumm-upgrade.
+#Written by Alexandr Ciornii, version 0.23. Added by eumm-upgrade.
+sub WriteMakefile1 {
     my %params=@_;
     my $eumm_version=$ExtUtils::MakeMaker::VERSION;
     $eumm_version=eval $eumm_version;
     die "EXTRA_META is deprecated" if exists $params{EXTRA_META};
     die "License not specified" if not exists $params{LICENSE};
-    if ($params{AUTHOR} and ref($params{AUTHOR}) eq 'ARRAY' and $eumm_version < 6.5705) {
-        $params{META_ADD}->{author}=$params{AUTHOR};
-        $params{AUTHOR}=join(', ',@{$params{AUTHOR}});
+    if ($params{AUTHOR} and ref($params{AUTHOR}) eq 'ARRAY'
+        and $eumm_version < 6.5705) {
+          $params{META_ADD}->{author}=$params{AUTHOR};
+          $params{AUTHOR}=join(', ',@{$params{AUTHOR}});
     }
     if ($params{BUILD_REQUIRES} and $eumm_version < 6.5503) {
         #EUMM 6.5502 has problems with BUILD_REQUIRES
-        $params{PREREQ_PM}={ %{$params{PREREQ_PM} || {}} , %{$params{BUILD_REQUIRES}} };
+        $params{PREREQ_PM}={
+          %{$params{PREREQ_PM} || {}} , %{$params{BUILD_REQUIRES}}
+        };
         delete $params{BUILD_REQUIRES};
     }
     delete $params{CONFIGURE_REQUIRES} if $eumm_version < 6.52;
