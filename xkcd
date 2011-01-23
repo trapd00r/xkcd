@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.070';
+$VERSION = '0.071';
 
 use strict;
 use WWW::Mechanize;
@@ -71,10 +71,11 @@ sub latest {
   my $url  = shift;
   $m->get($url) or die($!);
 
-  for($m->find_all_images) {
-    if($_->url =~ /\Q$xkcd_img\E/) {
-      $opt_comic_no = 'Random str that is not a number. Hurray!';
-      display_img( fetch($xkcd_base) );
+  for($m->content) {
+    if($_ =~ m/Permanent.+: (http:.+)</) {
+      my $new_url = $1;
+      ($opt_comic_no) = $new_url =~ m|(\d+)/?$|;
+      display_img( fetch( $new_url ));
       exit;
     }
   }
@@ -149,11 +150,8 @@ sub display_img {
   if( x() ) {
     system(get_viewer(), $url)  == 0
       and printf("\e[1m%s\e[0m:\n%s\n",
-      ($opt_comic_no !~ /^\d+$/)
-        ? 'Latest XKCD'
-        : "xkcd # $opt_comic_no"
-        , $text
-      );
+      "xkcd # $opt_comic_no", $text,
+    );
     return;
   }
 
