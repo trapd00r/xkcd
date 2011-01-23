@@ -29,7 +29,6 @@ WriteMakefile1(
     clean               => { FILES => 'xkcd-*' },
 );
 
-#Written by Alexandr Ciornii, version 0.23. Added by eumm-upgrade.
 sub WriteMakefile1 {
     my %params=@_;
     my $eumm_version=$ExtUtils::MakeMaker::VERSION;
