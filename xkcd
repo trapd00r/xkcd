@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.071';
+$VERSION = '0.072';
 
 use strict;
 use WWW::Mechanize;
@@ -163,10 +163,8 @@ sub display_img {
   }
 
   printf("%s\n%s\n",
-    ($opt_comic_no =~ /^\d+$/)
-      ? 'Latest xkcd'
-      : "xkcd $opt_comic_no"
-    );
+    $opt_comic_no, $text,
+  );
 }
 
 sub x {
