@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.072';
+$VERSION = '0.075';
 
 use strict;
 use WWW::Mechanize;
@@ -10,7 +10,7 @@ use Pod::Usage;
 
 my $m = WWW::Mechanize->new(
   onwarn  => undef,
-  onerror => sub { print "You are doing it Wrong. Stop. Bye.\n" and exit 1; },
+  onerror => sub { print "Oops. Something went wrong on the server side :(\n"; },
 );
 
 $m->agent_alias('Linux Mozilla');
@@ -20,19 +20,20 @@ my $xkcd_img    = 'http://imgs.xkcd.com/comics';
 my $xkcd_url    = undef;
 
 our($opt_comic_no, $opt_alt) = (-1, 0);
-our($opt_download);
+our($opt_download, @opt_download_all);
 our($opt_random);
 
 GetOptions(
-  'c|comic:i'   => \$opt_comic_no,
-  'a|alt|text'  => \$opt_alt,
-  'l|latest'    => sub { $opt_comic_no = -1; },
-  'download=s'  => \$opt_download,
-  'r|random'    => \$opt_random,
+  'c|comic:i'    => \$opt_comic_no,
+  'a|alt|text'   => \$opt_alt,
+  'l|latest'     => sub { $opt_comic_no = -1; },
+  'download=s'   => \$opt_download,
+  'download-all:i' => \@opt_download_all, # Support range? 30 .. 42
+  'r|random'     => \$opt_random,
 
-  'h|help'      => sub { pod2usage(verbose => 1); },
-  'm|man'       => sub { pod2usage(verbose => 3); },
-  'v|version'   => sub { printf("%s v%s\n", $APP, $VERSION) and exit; },
+  'h|help'       => sub { pod2usage(verbose => 1); },
+  'm|man'        => sub { pod2usage(verbose => 3); },
+  'v|version'    => sub { printf("%s v%s\n", $APP, $VERSION) and exit; },
 );
 
 $opt_comic_no = $ARGV[0] if $ARGV[0] =~ /^\d+$/;
@@ -43,6 +44,16 @@ if($opt_random) {
 }
 
 $xkcd_url  = "$xkcd_base/$opt_comic_no/";
+
+if(@opt_download_all) {
+  my $latest_comic = latest($xkcd_base, 1);
+
+  for(1 .. $latest_comic) {
+    download_comic($_, $opt_download);
+  }
+  exit;
+}
+
 
 if($opt_download) {
   download_comic($opt_comic_no, $opt_download);
@@ -68,13 +79,17 @@ display_img( fetch($xkcd_url) );
 
 
 sub latest {
-  my $url  = shift;
+  my($url, $action) = @_;
   $m->get($url) or die($!);
 
   for($m->content) {
     if($_ =~ m/Permanent.+: (http:.+)</) {
       my $new_url = $1;
       ($opt_comic_no) = $new_url =~ m|(\d+)/?$|;
+
+      if($action) {
+        return $opt_comic_no;
+      }
       display_img( fetch( $new_url ));
       exit;
     }
@@ -113,12 +128,8 @@ sub download_comic {
   $filename = "$comic-$filename" unless $comic eq -1;
   $dest .= $filename;
 
-  printf("%s => %s\n",
-    $img,
-    $dest,
-  ) if
-  $m->save_content($dest) == 0;
-  exit;
+  print "xkcd #$comic => $dest\n" if $m->save_content($dest) == 0;
+  return;
 }
 
 
@@ -202,11 +213,12 @@ from your shell.
 
 =head1 OPTIONS
 
-  -c,   --comic     comic number
-  -l,   --latest    show the latest xkcd comic
-  -r,   --random    operate on a random xkcd comic
-  -a,   --alt       show the 'mouse over' text
-  -d,   --download  download the comic to DESTINATION
+  -c,   --comic         comic number
+  -l,   --latest        show the latest xkcd comic
+  -r,   --random        operate on a random xkcd comic
+  -a,   --alt           show the 'mouse over' text
+  -d,   --download      download the comic to DESTINATION
+        --download-all  download all comics to DESTINATION
 
   -h,   --help      show the help and exit
   -v,   --version   show version info and exit
