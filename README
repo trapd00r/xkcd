@@ -5,13 +5,16 @@ USAGE
     xkcd [OPTIONS]
 
 DESCRIPTION
-    xkcd rocks.
+    Command-line interface to xkcd. View, download and enjoy xkcd comics
+    straight from your shell.
 
 OPTIONS
-      -c,   --comic     comic number
-      -l,   --latest    show the latest xkcd comic
-      -a,   --alt       show the 'mouse over' text
-      -d,   --download  download the comic to DESTINATION
+      -c,   --comic         comic number
+      -l,   --latest        show the latest xkcd comic
+      -r,   --random        operate on a random xkcd comic
+      -a,   --alt           show the 'mouse over' text
+      -d,   --download      download the comic to DESTINATION
+            --download-all  download all comics to DESTINATION
 
       -h,   --help      show the help and exit
       -v,   --version   show version info and exit
@@ -33,7 +36,7 @@ REPORTING BUGS
     <magnus@trapd00r.se>
 
 COPYRIGHT
-    Copyright (C) 2010 Magnus Woldrich. All right reserved. This program is
-    free software; you can redistribute it and/or modify it under the same
-    terms as Perl itself.
+    Copyright (C) 2010, 2011 Magnus Woldrich. All right reserved. This
+    program is free software; you can redistribute it and/or modify it under
+    the same terms as Perl itself.
 
