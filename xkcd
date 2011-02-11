@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.075';
+$VERSION = '0.076';
 
 use strict;
 use WWW::Mechanize;
@@ -144,6 +144,8 @@ sub fetch {
       $img_url = $1;
       $alt     = $2;
       $alt =~ s/&#39;/'/g;
+      $alt =~ s/&quot/"/g;
+      $alt =~ s/&lt/</g;
       last;
     }
   }
