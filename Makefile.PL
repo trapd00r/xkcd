@@ -2,40 +2,40 @@ use strict;
 use warnings;
 use ExtUtils::MakeMaker;
 
-WriteMakefile1(
+WriteMakefile1 (
     META_MERGE => {
         resources => {
-            repository => 'https://github.com/trapd00r/xkcd',
-            bugtracker => 'https://github.com/trapd00r/xkcd/issues',
+            repository => q{https://github.com/trapd00r/xkcd},
+            bugtracker => q{https://github.com/trapd00r/xkcd/issues},
         },
     },
-    #BUILD_REQUIRES => {
-    #},
 
-    NAME                => 'App::xkcd',
+    NAME                => q{App::xkcd},
     AUTHOR              => q{Magnus Woldrich <trapd00r@trapd00r.se>},
-    ABSTRACT           => 'Command-line interface to xkcd',
-    VERSION_FROM        => './xkcd',
-    'LICENSE'           => 'perl',
-    PL_FILES            => {},
-    EXE_FILES =>           ['xkcd'],
-    PREREQ_PM => {
-      'WWW::Mechanize'  => 0,
+    ABSTRACT            => q{Command-line interface to xkcd},
+    VERSION_FROM        => q{./xkcd},
+    LICENSE             => q{perl},
+    MAKEFILE_OLD        => q{/tmp/},
+
+    PL_FILES            => { },
+    EXE_FILES           => ['xkcd'],
+    PREREQ_PM           => {
+      q{WWW::Mechanize} => 0,
     },
     MAN1PODS            => {
-      'xkcd'            => 'blib/man1/xkcd.1',
-      },
-    dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
-    clean               => { FILES => 'xkcd-*' },
+      q{xkcd}           => q{blib/man1/xkcd.1},
+    },
+    dist                => { COMPRESS => q{gzip -9f}, SUFFIX => q{gz}, },
+    clean               => { FILES    => q{xkcd-*} },
 );
 
 sub WriteMakefile1 {
-    my %params=@_;
-    my $eumm_version=$ExtUtils::MakeMaker::VERSION;
-    $eumm_version=eval $eumm_version;
+    my %params = @_;
+    my $eumm_version = $ExtUtils::MakeMaker::VERSION;
+    $eumm_version = eval $eumm_version;
     die "EXTRA_META is deprecated" if exists $params{EXTRA_META};
     die "License not specified" if not exists $params{LICENSE};
-    if ($params{AUTHOR} and ref($params{AUTHOR}) eq 'ARRAY'
+    if ($params{AUTHOR} and ref($params{AUTHOR}) eq q{ARRAY}
         and $eumm_version < 6.5705) {
           $params{META_ADD}->{author}=$params{AUTHOR};
           $params{AUTHOR}=join(', ',@{$params{AUTHOR}});
@@ -48,13 +48,16 @@ sub WriteMakefile1 {
         delete $params{BUILD_REQUIRES};
     }
     delete $params{CONFIGURE_REQUIRES} if $eumm_version < 6.52;
-    delete $params{MIN_PERL_VERSION} if $eumm_version < 6.48;
-    delete $params{META_MERGE} if $eumm_version < 6.46;
-    delete $params{META_ADD} if $eumm_version < 6.46;
-    delete $params{LICENSE} if $eumm_version < 6.31;
-    delete $params{AUTHOR} if $] < 5.005;
-    delete $params{ABSTRACT_FROM} if $] < 5.005;
-    delete $params{BINARY_LOCATION} if $] < 5.005;
+    delete $params{MIN_PERL_VERSION}   if $eumm_version < 6.48;
+    delete $params{META_MERGE}         if $eumm_version < 6.46;
+    delete $params{META_ADD}           if $eumm_version < 6.46;
+    delete $params{LICENSE}            if $eumm_version < 6.31;
+    delete $params{AUTHOR}             if $] < 5.005;
+    delete $params{ABSTRACT_FROM}      if $] < 5.005;
+    delete $params{BINARY_LOCATION}    if $] < 5.005;
+
+    delete $params{MAN3PODS}->{'README.pod'};
 
     WriteMakefile(%params);
 }
+
