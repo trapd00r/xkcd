@@ -1,12 +1,14 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.077';
+$VERSION = '0.080';
 
 use strict;
 use WWW::Mechanize;
 use Getopt::Long;
 use Pod::Usage;
+use HTML::Entities qw(decode_entities);
+
 
 my $m = WWW::Mechanize->new(
   onwarn  => undef,
@@ -143,13 +145,10 @@ sub fetch {
     if(m;<img src="($xkcd_img/.+\.(?:png|jpg))" title="(.+)" alt;) {
       $img_url = $1;
       $alt     = $2;
-      $alt =~ s/&#39;/'/g;
-      $alt =~ s/&quot/"/g;
-      $alt =~ s/&lt/</g;
       last;
     }
   }
-  return($img_url, $alt);
+  return($img_url, decode_entities($alt));
 }
 
 

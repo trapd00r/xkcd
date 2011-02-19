@@ -11,7 +11,7 @@ WriteMakefile1 (
     },
 
     NAME                => q{App::xkcd},
-    AUTHOR              => q{Magnus Woldrich <trapd00r@trapd00r.se>},
+    AUTHOR              => q{Magnus Woldrich <magnus@trapd00r.se>},
     ABSTRACT            => q{Command-line interface to xkcd},
     VERSION_FROM        => q{./xkcd},
     LICENSE             => q{perl},
@@ -21,6 +21,7 @@ WriteMakefile1 (
     EXE_FILES           => ['xkcd'],
     PREREQ_PM           => {
       q{WWW::Mechanize} => 0,
+      q{HTML::Entities} => 0,
     },
     MAN1PODS            => {
       q{xkcd}           => q{blib/man1/xkcd.1},
@@ -55,8 +56,6 @@ sub WriteMakefile1 {
     delete $params{AUTHOR}             if $] < 5.005;
     delete $params{ABSTRACT_FROM}      if $] < 5.005;
     delete $params{BINARY_LOCATION}    if $] < 5.005;
-
-    delete $params{MAN3PODS}->{'README.pod'};
 
     WriteMakefile(%params);
 }
