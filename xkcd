@@ -68,6 +68,7 @@ if( ($opt_comic_no == -1) and not($opt_alt)) {
 
 if($opt_alt) {
   if($opt_comic_no == -1) {
+    $opt_comic_no = latest($xkcd_base, 1);
     $xkcd_url = $xkcd_base;
   }
   my(undef, $txt) = fetch($xkcd_url);
