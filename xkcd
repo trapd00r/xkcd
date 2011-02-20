@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.080';
+$VERSION = '0.082';
 
 use strict;
 use WWW::Mechanize;
