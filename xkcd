@@ -24,6 +24,7 @@ my $xkcd_url    = undef;
 our($opt_comic_no, $opt_alt) = (-1, 0);
 our($opt_download, @opt_download_all);
 our($opt_random);
+our($opt_no_zoom);
 
 GetOptions(
   'c|comic:i'    => \$opt_comic_no,
@@ -32,6 +33,7 @@ GetOptions(
   'download=s'   => \$opt_download,
   'download-all:i' => \@opt_download_all, # Support range? 30 .. 42
   'r|random'     => \$opt_random,
+  'no-zoom'      => \$opt_no_zoom,
 
   'h|help'       => sub { pod2usage(verbose => 1); },
   'm|man'        => sub { pod2usage(verbose => 3); },
@@ -188,7 +190,9 @@ sub x {
 sub get_viewer {
   my $feh = system("which feh &> /dev/null");
   if( ($feh << 8) == 0 ) {
-    return('feh', qw(-F -Z -Q -x -B black));
+    my @feh = ('feh', qw(-F -Q -x -B black));
+    push @feh, '-Z' unless $opt_no_zoom;
+    return @feh;
   }
   my $display = system("which display &> /dev/null");
   if( ($display << 8) == 0 ) {
@@ -221,6 +225,7 @@ from your shell.
   -a,   --alt           show the 'mouse over' text
   -d,   --download      download the comic to DESTINATION
         --download-all  download all comics to DESTINATION
+        --no-zoom       don't zoom the comic
 
   -h,   --help      show the help and exit
   -v,   --version   show version info and exit

@@ -15,6 +15,7 @@ OPTIONS
       -a,   --alt           show the 'mouse over' text
       -d,   --download      download the comic to DESTINATION
             --download-all  download all comics to DESTINATION
+            --no-zoom       don't zoom the comic
 
       -h,   --help      show the help and exit
       -v,   --version   show version info and exit
