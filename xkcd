@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 my $APP = 'xkcd';
 use vars qw($VERSION);
-$VERSION = '0.082';
+$VERSION = '0.084';
 
 use strict;
 use WWW::Mechanize;
@@ -243,6 +243,12 @@ needs to be installed.
   magnus@trapd00r.se
   http://japh.se
 
+=head1 CONTRIBUTORS
+
+    --no-zoom flag         Dmitri Iouchtchenko
+
+    Makefile.PL template   Alexandr Ciornii
+
 =head1 REPORTING BUGS
 
 Report bugs on the issue tracker ( L<https://github.com/trapd00r/xkcd/issues> )
@@ -250,7 +256,11 @@ or by mail to <magnus@trapd00r.se>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2010, 2011 Magnus Woldrich. All right reserved.
+Copyright (C) 2010, 2011 the B<xkcd> L</AUTHOR> and L</CONTRIBUTORS> as listed
+above.
+
+=head1 LICENSE
+
 This program is free software; you can redistribute it and/or modify it under
 the same terms as Perl itself.
 
